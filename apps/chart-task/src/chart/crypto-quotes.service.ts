@@ -4,9 +4,7 @@ import { Observable } from 'rxjs';
 import {map} from 'rxjs/operators';
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 /**
  * Provides services related to crypto currencies markets which are traded against USD.
