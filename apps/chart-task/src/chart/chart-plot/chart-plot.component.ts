@@ -42,10 +42,11 @@ export class ChartPlotComponent implements OnInit, OnChanges {
     this.maxValue$.subscribe((value: number) => {
       this.scale = this.BAR_HEIGHT / value;
 
-      this.yLabels = [];
+      const labels = [];
       for (let i = 0; i < 5; i++) {
-        this.yLabels.push(value / (i + 1));
+        labels.push(value / (i + 1));
       }
+      this.yLabels = labels;
     });
   }
 
