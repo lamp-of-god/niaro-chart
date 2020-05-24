@@ -1,0 +1,6 @@
+<div>
+  <chart-task-add-currency
+    [availableCurrencies]="availableCurrenciesList$ | async"
+    (add)="addCurrency($event)"></chart-task-add-currency>
+  <chart-task-chart-plot [items]="histogramItems$ | async"></chart-task-chart-plot>
+</div>

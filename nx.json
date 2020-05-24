@@ -21,10 +21,6 @@
   "projects": {
     "chart-task": {
       "tags": []
-    },
-    "chart-task-e2e": {
-      "tags": [],
-      "implicitDependencies": ["chart-task"]
     }
   }
 }

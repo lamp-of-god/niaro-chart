@@ -1,0 +1,66 @@
+<section class="chart">
+  <svg [style.width]="plotWidth" [style.height]="PLOT_HEIGHT">
+
+    <svg>
+      <line class="axis y-axis"
+            x1="75" y1="0"
+            x2="75" [attr.y2]="BAR_HEIGHT + 20" />
+      <line class="arrow" x1="70" y1="5" x2="75" y2="0" />
+      <line class="arrow" x1="80" y1="5" x2="75" y2="0" />
+
+      <line class="axis x-axis"
+            x1="75" [attr.y1]="BAR_HEIGHT + 20"
+            [attr.x2]="plotWidth" [attr.y2]="BAR_HEIGHT + 20"/>
+      <line class="arrow"
+            [attr.x1]="plotWidth - 5"
+            [attr.x2]="plotWidth"
+            [attr.y1]="BAR_HEIGHT + 15"
+            [attr.y2]="BAR_HEIGHT + 20" />
+      <line class="arrow"
+            [attr.x1]="plotWidth - 5"
+            [attr.x2]="plotWidth"
+            [attr.y1]="BAR_HEIGHT + 25"
+            [attr.y2]="BAR_HEIGHT + 20" />
+
+      <ng-container *ngFor="let value of yLabels; let i = index">
+        <svg *ngIf="i !== 5">
+          <line x1="70" x2="80"
+                [attr.y1]="BAR_HEIGHT/yLabels.length * i + 20"
+                [attr.y2]="BAR_HEIGHT/yLabels.length * i + 20"
+                stroke="black" stroke-width="1" />
+          <text x="0" [attr.y]="BAR_HEIGHT/yLabels.length * i + 25" font-size="12">
+            {{value | number: "1.4-4"}}
+          </text>
+        </svg>
+      </ng-container>
+    </svg>
+
+    <svg x="85" y="20">
+      <g>
+        <title>1 USD</title>
+        <rect class="bar usd"
+              [attr.y]="BAR_HEIGHT - scale"
+              [attr.height]="scale"
+              [attr.width]="BARS_WIDTH"></rect>
+      </g>
+      <text [attr.x]="BARS_WIDTH/2" [attr.y]="BAR_HEIGHT + 30"
+            font-size="14" text-anchor="middle">USD</text>
+
+      <ng-container *ngFor="let item of items; let i = index">
+        <svg [attr.x]="(i + 1) * BARS_WIDTH">
+          <g>
+            <title>{{item.value}} USD</title>
+            <rect class="bar"
+                  [attr.y]="BAR_HEIGHT - item.value * scale"
+                  [attr.height]="item.value * scale"
+                  [attr.width]="BARS_WIDTH"></rect>
+          </g>
+          <text [attr.x]="BARS_WIDTH/2" [attr.y]="BAR_HEIGHT + 30"
+                font-size="14" text-anchor="middle">
+            {{item.name}}
+          </text>
+        </svg>
+      </ng-container>
+    </svg>
+  </svg>
+</section>

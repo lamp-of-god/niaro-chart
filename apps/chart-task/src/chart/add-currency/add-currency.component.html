@@ -1,0 +1,6 @@
+<form class="add-new-currency-form">
+    <select [(ngModel)]="selected" name="currency">
+        <option *ngFor="let currency of availableCurrencies" [ngValue]="currency">{{currency}}</option>
+    </select>
+    <button (click)="addCurrency()">Add currency</button>
+</form>

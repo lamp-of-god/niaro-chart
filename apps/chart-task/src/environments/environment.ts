@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  chart_refresh_period: 5000,
 };
 
 /*
