@@ -40,13 +40,15 @@ export class ChartPageComponent implements OnInit {
   ngOnInit(): void {
     // Assume markets list doesn't change over app living time, so no need to
     // retrieve full list of currencies each time.
-    this.cryptoQuotesService.getCurrencies()
-      .pipe(retryWhen(errors => errors.pipe(delay(3000))))
-      .subscribe((currencies: string[]) => {
-        this.availableCurrenciesList$ = this.chosenCurrencies$.pipe(
-          map((chosen) => currencies.filter(x => !chosen.includes(x)))
+    this.availableCurrenciesList$ =
+      this.cryptoQuotesService.getCurrencies()
+        .pipe(
+          retryWhen(errors => errors.pipe(delay(3000))),
+          switchMap((currencies: string[]) => {
+            return this.chosenCurrencies$
+              .pipe(map((chosen) => currencies.filter(x => !chosen.includes(x))));
+          })
         );
-      });
 
     this.chosenCurrencies$.subscribe((currencies: string[]) => {
       currencies
