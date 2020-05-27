@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CryptoQuotesService, Ticker } from '../crypto-quotes.service';
 import {Observable, BehaviorSubject, timer, Subscription} from 'rxjs';
 
-import {switchMap, map, retryWhen, delayWhen, delay} from 'rxjs/operators';
+import {switchMap, map, retryWhen, delay, pairwise, startWith} from 'rxjs/operators';
 import HistogramItem from "../chart-plot/interfaces/histogram-item";
 import {environment} from "../../environments/environment";
 
@@ -50,31 +50,43 @@ export class ChartPageComponent implements OnInit {
           })
         );
 
-    this.chosenCurrencies$.subscribe((currencies: string[]) => {
-      currencies
-        .filter(x => !this.tickersSubscriptions[x])
-        .forEach((currency: string) => {
-          this.tickersSubscriptions[currency] =
-            timer(0, environment.chart_refresh_period)
-              .pipe(switchMap(() => this.cryptoQuotesService.getTicker(currency)))
-              .pipe(retryWhen(errors => errors.pipe(delay(5000))))
-              .subscribe((ticker: Ticker) => {
-                const items = [...this.histogramItems$.value];
-                const existed = items.filter(x => x.name === currency);
-                if (existed.length === 1) {
-                  if (existed[0].value === ticker.Bid) {
-                    return;  // No update in case value didn't change
-                  }
-                  existed[0].value = ticker.Bid;
-                } else {
-                  items.push({
-                    name: currency,
-                    value: ticker.Bid,
-                  });
+    this.chosenCurrencies$.pipe(
+      startWith([]),
+      pairwise(),
+    ).subscribe(([prevCurrencies, currencies]) => {
+      const addedCurrencies = currencies.filter(x => !prevCurrencies.includes(x));
+      const removedCurrencies = prevCurrencies.filter(x => !currencies.includes(x));
+
+      removedCurrencies.forEach(currency => {
+        if (this.tickersSubscriptions[currency]) {
+          this.tickersSubscriptions[currency].unsubscribe();
+          delete this.tickersSubscriptions[currency];
+        }
+      });
+
+      // TODO: in case of race there could be issues. How to fix them?
+      addedCurrencies.forEach(currency => {
+        this.tickersSubscriptions[currency] =
+          timer(0, environment.chart_refresh_period)
+            .pipe(switchMap(() => this.cryptoQuotesService.getTicker(currency)))
+            .pipe(retryWhen(errors => errors.pipe(delay(5000))))
+            .subscribe((ticker: Ticker) => {
+              const items = [...this.histogramItems$.value];
+              const existed = items.filter(x => x.name === currency);
+              if (existed.length === 1) {
+                if (existed[0].value === ticker.Bid) {
+                  return;  // No update in case value didn't change
                 }
-                this.histogramItems$.next(items);
-              });
-        });
+                existed[0].value = ticker.Bid;
+              } else {
+                items.push({
+                  name: currency,
+                  value: ticker.Bid,
+                });
+              }
+              this.histogramItems$.next(items);
+            });
+      });
     });
   }
 
