@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 
 @Component({
@@ -18,7 +18,6 @@ export class AddCurrencyComponent implements OnInit {
 
   /** Currently selected currency */
   selected: string = null;
-
 
   ngOnInit(): void {}
 
